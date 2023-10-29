@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Hotspots</title>
+    <script src="https://maps.googleapis.com/maps/api/js?key="></script> <!-- Replace YOUR_API_KEY with your actual API key -->
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f2f2f2;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        #map {
+            height: 400px;
+            width: 100%;
+        }
+    </style>
+    <script>
+        function initMap() {
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15, // Adjust the zoom level as needed
+                center: {lat: 30.3360941, lng: 77.9621531} // Default coordinates for Dehradun
+            });
+
+            // Define hotspots for each location
+            // You can replace these coordinates with the actual coordinates of your hotspots
+            var hotspots = {
+                'premnagar_market': [
+                    {lat: 30.3360941, lng: 77.9621531},
+                    {lat: 30.3360367, lng: 77.9624639},
+                    {lat: 30.3175, lng: 78.0332}
+                ],
+                'ballupur_chowk': [
+                    {lat: 30.3180, lng: 78.0337},
+                    {lat: 30.3185, lng: 78.0342}
+                ],
+                'ghanta_ghar_market': [
+                    {lat: 30.3190, lng: 78.0347},
+                    {lat: 30.3195, lng: 78.0352}
+                ],
+                'rajpur_road': [
+                    {lat: 31.3200, lng: 78.0357},
+                    {lat: 30.3205, lng: 78.0362}
+                ]
+            };
+
+            // Get the selected location from the URL parameters
+            var urlParams = new URLSearchParams(window.location.search);
+            var location = urlParams.get('location');
+
+            // Check if the selected location exists in hotspots
+            if (location in hotspots) {
+                // Set the map's center to the selected location's coordinates
+                map.setCenter(hotspots[location][0]);
+                
+                // Add markers for each hotspot in the selected location
+                for (var i = 0; i < hotspots[location].length; i++) {
+                    var marker = new google.maps.Marker({
+                        position: hotspots[location][i],
+                        map: map
+                    });
+
+                    // Add a click listener to each marker
+                    marker.addListener('click', function() {
+                        window.location.href = '/vendingApplication';
+                    });
+                }
+            }
+        }
+    </script>
+</head>
+<body onload="initMap()">
+    <div class="container">
+        <h1>View Hotspots <%= location %></h1>
+        <div id="map"></div> <!-- The map will be centered on the selected location -->
+    </div>
+</body>
+</html>
