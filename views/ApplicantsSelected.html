@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Display Users with Hotspot</title>
+  </head>
+  <body>
+    <h1>Display Users with Hotspot</h1>
+
+    <!-- Dropdown to select location -->
+    <label for="locations">Select Location:</label>
+    <select id="locations" onchange="updateHotspots()">
+      <option value="">Select Location...</option>
+      <option value="premnagar">Premnagar</option>
+      <option value="ballupur">Ballupur</option>
+      <option value="ghanta_ghar">Ghanta Ghar</option>
+      <option value="rajpur_road">Rajpur Road</option>
+    </select>
+
+    <!-- Dropdown to select hotspot based on location selection -->
+    <label for="hotspots">Select Hotspot:</label>
+    <select id="hotspots">
+      <option value="">Select Hotspot...</option>
+    </select>
+
+    <!-- Display area for users who got the selected hotspot -->
+    <div id="userList"></div>
+
+    <script>
+      // Hotspot data based on locations
+      const hotspotsData = {
+        premnagar_market: ["Hotspot 1", "Hotspot 2", "Hotspot 3"],
+        ballupur_chowk: ["Hotspot A", "Hotspot B", "Hotspot C"],
+        ghanta_ghar_market: ["Hotspot X", "Hotspot Y", "Hotspot Z"],
+        rajpur_road: ["Hotspot i", "Hotspot ii", "Hotspot iii"],
+      };
+
+      // Function to update hotspots dropdown based on selected location
+      function updateHotspots() {
+        const locationsDropdown = document.getElementById("locations");
+        const hotspotsDropdown = document.getElementById("hotspots");
+        const selectedLocation = locationsDropdown.value;
+
+        // Clear previous options
+        hotspotsDropdown.innerHTML =
+          '<option value="">Select Hotspot...</option>';
+
+        if (selectedLocation && hotspotsData[selectedLocation]) {
+          const hotspots = hotspotsData[selectedLocation];
+          hotspots.forEach((hotspot) => {
+            const option = document.createElement("option");
+            option.value = hotspot;
+            option.text = hotspot;
+            hotspotsDropdown.appendChild(option);
+          });
+        }
+      }
+
+      // Function to display users who got the selected hotspot
+      document
+        .getElementById("locations")
+        .addEventListener("change", function () {
+          const selectedLocation = this.value;
+          const userListDiv = document.getElementById("userList");
+
+          // Fetch users based on selected location
+          fetch(`/getUsers?location=${selectedLocation}`)
+            .then((response) => response.json())
+            .then((data) => {
+              // Display users in userListDiv
+              let userListHTML = `<h3>Users at ${selectedLocation}:</h3><ul>`;
+              data.forEach((user) => {
+                userListHTML += `<li>${user.name}</li>`;
+              });
+              userListHTML += "</ul>";
+              userListDiv.innerHTML = userListHTML;
+            })
+            .catch((error) => {
+              console.error("Error fetching users:", error);
+            });
+
+          // Filter users based on selected hotspot
+          const filteredUsers = users.filter(
+            (user) => user.hotspot !== selectedHotspot
+          );
+
+          // Display the users in the userListDiv
+          let userListHTML = "<h3>User who got " + selectedHotspot + ":</h3>";
+          userListHTML += "<ul>";
+          filteredUsers.forEach((user) => {
+            userListHTML += "<li>" + user.name + "</li>";
+          });
+          userListHTML += "</ul>";
+
+          userListDiv.innerHTML = userListHTML;
+        });
+    </script>
+  </body>
+</html>

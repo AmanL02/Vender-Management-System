@@ -1,86 +1,147 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Apply for License</title>
-    <style>
-        body {
-            font-size: 20px;
-            border: 2px solid black;
-            padding: 20px;
-        }
-        .form-element {
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-<body>
+  <head>
+    <title>Vendor Slot Application</title>
+  </head>
+
+  <body>
     <h1>Apply for License</h1>
     <form action="/submit_application" method="post">
-        <div class="form-element">
-            <label for="name"><b>Name</b></label><br>
-            <input type="text" placeholder="Enter Name" name="name" required><br>
-        </div>
+      <input
+        type="hidden"
+        id="location"
+        name="location"
+        value="<%= location %>"
+      />
+      <label for="selectedDate">Select Date (4 or 5 Days Ahead):</label>
+      <input type="date" id="selectedDate" name="selectedDate" />
+      <label for="amount">Bid Amount:</label>
+      <input
+        type="number"
+        id="amount"
+        name="amount"
+        placeholder="Enter Bid Amount"
+      />
 
-        <div class="form-element">
-            <label for="age"><b>Age</b></label><br>
-            <input type="number" placeholder="Enter Age" name="age" required><br>
-        </div>
+      <div class="form-element">
+        <label for="name"><b>Name</b></label
+        ><br />
+        <input
+          type="text"
+          placeholder="Enter Name"
+          name="name"
+          required
+        /><br />
+      </div>
 
-        <div class="form-element">
-            <label for="aadhaar_number"><b>Aadhaar Number</b></label><br>
-            <input type="text" placeholder="Enter Aadhaar Number" name="aadhaar_number" required><br>
-        </div>
+      <div class="form-element">
+        <label for="age"><b>Age</b></label
+        ><br />
+        <input
+          type="number"
+          placeholder="Enter Age"
+          name="age"
+          required
+        /><br />
+      </div>
 
-        <div class="form-element">
-            <label for="contact_number"><b>Contact Number</b></label><br>
-            <input type="text" placeholder="Enter Contact Number" name="contact_number" required><br>
-        </div>
+      <div class="form-element">
+        <label for="aadhaar_number"><b>Aadhaar Number</b></label
+        ><br />
+        <input
+          type="text"
+          placeholder="Enter Aadhaar Number"
+          name="aadhaar_number"
+          required
+        /><br />
+      </div>
 
-        <div class="form-element">
-            <label for="goods_category"><b>Goods Category</b></label><br>
-            <select name="goods_category" required>
-                <option value="">Select...</option>
-                <option value="eatable">Eatable Goods</option>
-                <option value="non_eatable">Non-Eatable Goods</option>
-            </select><br>
-        </div>
+      <div class="form-element">
+        <label for="contact_number"><b>Contact Number</b></label
+        ><br />
+        <input
+          type="text"
+          placeholder="Enter Contact Number"
+          name="contact_number"
+          required
+        /><br />
+      </div>
 
-        <div class="form-element">
-            <label for="specific_products"><b>Specific Products</b></label><br>
-            <textarea name="specific_products" placeholder="Enter the specific products that you are selling" required></textarea><br>
-        </div>
+      <div class="form-element">
+        <label for="goods_category"><b>Goods Category</b></label
+        ><br />
+        <select name="goods_category" required>
+          <option value="">Select...</option>
+          <option value="eatable">Eatable Goods</option>
+          <option value="non_eatable">Non-Eatable Goods</option></select
+        ><br />
+      </div>
 
-        <!-- Added a new field for selecting a hotspot -->
-        <div class="form-element">
-            <label for="hotspot"><b>Select a Hotspot</b></label><br>
-            <select name="hotspot" required>
-                <!-- You can replace these options with the actual hotspots -->
-                <option value="">Select...</option>
-                <option value="hotspot1">Hotspot 1</option>
-                <option value="hotspot2">Hotspot 2</option>
-                <!-- ... -->
-            </select><br>
-        </div>
+      <div class="form-element">
+        <label for="specific_products"><b>Specific Products</b></label
+        ><br />
+        <textarea
+          name="specific_products"
+          placeholder="Enter the specific products that you are selling"
+          required
+        ></textarea
+        ><br />
+      </div>
 
-        <!-- Added a new field for uploading documents -->
-        <div class="form-element">
-            <label for="documents"><b>Upload Documents (if any)</b></label><br>
-            <input type="file" name="documents"><br>
-        </div>
+      <!-- Added a new field for selecting a hotspot -->
+      <div class="form-element">
+        <label for="hotspot"><b>Select a Hotspot</b></label
+        ><br />
+        <select name="hotspot" required>
+          <!-- You can replace these options with the actual hotspots -->
+          <option value="">Select...</option>
+          <option value="hotspot1">Hotspot 1</option>
+          <option value="hotspot2">Hotspot 2</option>
+          <!-- ... --></select
+        ><br />
+      </div>
 
-        <!-- Added a new field for additional comments -->
-        <div class="form-element">
-            <label for="comments"><b>Additional Comments</b></label><br>
-            <textarea name="comments"></textarea><br>
-        </div>
+      <!-- Added a new field for uploading documents -->
+      <div class="form-element">
+        <label for="documents"><b>Upload Documents (if any)</b></label
+        ><br />
+        <input type="file" name="documents" /><br />
+      </div>
 
-        <!-- Added a checkbox to agree to terms and conditions -->
-        <div class="form-element">
-            <input type="checkbox" name="agree_to_terms" required> I agree to the terms and conditions<br>
-        </div>
+      <!-- Added a new field for additional comments -->
+      <div class="form-element">
+        <label for="comments"><b>Additional Comments</b></label
+        ><br />
+        <textarea name="comments"></textarea><br />
+      </div>
 
-        <!-- Changed the button text to "Apply Now" -->
-        <input type="submit" value="Apply Now">
+      <!-- Added a checkbox to agree to terms and conditions -->
+      <div class="form-element">
+        <input type="checkbox" name="agree_to_terms" required /> I agree to the
+        terms and conditions<br />
+      </div>
+
+      <!-- Changed the button text to "Apply Now" -->
+      <input type="submit" value="Apply Now" />
     </form>
-</body>
+
+    <script>
+      function getFourAndFiveDaysAhead() {
+        const today = new Date();
+        today.setDate(today.getDate() + 4); // Adding 4 days
+        const fourDaysAhead = today.toISOString().split("T")[0];
+
+        today.setDate(today.getDate() + 1); // Adding 1 more day to make it 5 days ahead
+        const fiveDaysAhead = today.toISOString().split("T")[0];
+
+        return [fourDaysAhead, fiveDaysAhead];
+      }
+
+      const selectedDateInput = document.getElementById("selectedDate");
+
+      const [fourDaysAhead, fiveDaysAhead] = getFourAndFiveDaysAhead();
+      selectedDateInput.min = fourDaysAhead;
+      selectedDateInput.max = fiveDaysAhead;
+    </script>
+  </body>
 </html>
