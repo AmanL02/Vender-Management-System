@@ -10,9 +10,9 @@
     <label for="locations">Select Location:</label>
     <select id="locations" onchange="updateHotspots()">
       <option value="">Select Location...</option>
-      <option value="premnagar">Premnagar</option>
-      <option value="ballupur">Ballupur</option>
-      <option value="ghanta_ghar">Ghanta Ghar</option>
+      <option value="premnagar_market">Premnagar</option>
+      <option value="ballupur_chowk">Ballupur</option>
+      <option value="ghanta_ghar_market">Ghanta Ghar</option>
       <option value="rajpur_road">Rajpur Road</option>
     </select>
 
@@ -22,14 +22,20 @@
       <option value="">Select Hotspot...</option>
     </select>
 
+    <label for="selectedDate">Select Date :</label>
+    <input type="date" id="selectedDate" />
+
     <!-- Display area for users who got the selected hotspot -->
     <div id="userList"></div>
+
+    <!-- Submit button to fetch data -->
+    <button onclick="fetchUserData()">Fetch Data</button>
 
     <script>
       // Hotspot data based on locations
       const hotspotsData = {
-        premnagar_market: ["Hotspot 1", "Hotspot 2", "Hotspot 3"],
-        ballupur_chowk: ["Hotspot A", "Hotspot B", "Hotspot C"],
+        premnagar_market: ["hotspot1", "hotspot2", "hotspot3"],
+        ballupur_chowk: ["hotspot1", "hotspot2", "hotspot3"],
         ghanta_ghar_market: ["Hotspot X", "Hotspot Y", "Hotspot Z"],
         rajpur_road: ["Hotspot i", "Hotspot ii", "Hotspot iii"],
       };
@@ -55,44 +61,63 @@
         }
       }
 
-      // Function to display users who got the selected hotspot
+      var selectedHotspot;
       document
-        .getElementById("locations")
+        .getElementById("hotspots")
         .addEventListener("change", function () {
-          const selectedLocation = this.value;
-          const userListDiv = document.getElementById("userList");
+          selectedHotspot = this.value;
+        });
 
-          // Fetch users based on selected location
-          fetch(`/getUsers?location=${selectedLocation}`)
-            .then((response) => response.json())
-            .then((data) => {
-              // Display users in userListDiv
-              let userListHTML = `<h3>Users at ${selectedLocation}:</h3><ul>`;
-              data.forEach((user) => {
-                userListHTML += `<li>${user.name}</li>`;
-              });
-              userListHTML += "</ul>";
-              userListDiv.innerHTML = userListHTML;
-            })
-            .catch((error) => {
-              console.error("Error fetching users:", error);
+      // Function to fetch user data when submit button is clicked
+      function fetchUserData() {
+        const selectedLocation = document.getElementById("locations").value;
+        const userListDiv = document.getElementById("userList");
+
+        const date = document.getElementById("selectedDate").value;
+
+        // Fetch users based on selected location
+        fetch(`/getUsers?location=${selectedLocation}`)
+          .then((response) => response.json())
+          .then((users) => {
+
+            console.log("users",users);
+            // Filter users based on selected hotspot
+
+            const filteredUsers = users.filter(
+              (user) =>
+                user.hotspot === selectedHotspot &&
+                user.selectedDate === date
+            );
+
+            // Find the user with the highest bidding among the filtered users
+            let highestBidUser = { amount: 0 }; // Initial user with 0 bidding amount
+            filteredUsers.forEach((user) => {
+              const bidAmount = parseFloat(user.amount);
+              if (bidAmount > highestBidUser.amount) {
+                highestBidUser = user;
+              }
             });
 
-          // Filter users based on selected hotspot
-          const filteredUsers = users.filter(
-            (user) => user.hotspot !== selectedHotspot
-          );
+            // Display details of the user with the highest bidding for the selected hotspot
+            let userDetailsHTML = `<h3>Highest Bidder at ${selectedHotspot}:</h3>`;
+            if (highestBidUser._id) {
+              userDetailsHTML += `
+              <p>Name: ${highestBidUser.name}</p>
+              <p>Age: ${highestBidUser.age}</p>
+              <p>Contact Number: ${highestBidUser.contact_number}</p>
+              <!-- Display other details as needed -->
+            `;
+            } else {
+              userDetailsHTML += `<p>No highest bidder found for ${selectedHotspot}</p>`;
+            }
 
-          // Display the users in the userListDiv
-          let userListHTML = "<h3>User who got " + selectedHotspot + ":</h3>";
-          userListHTML += "<ul>";
-          filteredUsers.forEach((user) => {
-            userListHTML += "<li>" + user.name + "</li>";
+            // Display the user details in userDetailsDiv
+            userListDiv.innerHTML = userDetailsHTML;
+          })
+          .catch((error) => {
+            console.error("Error fetching users:", error);
           });
-          userListHTML += "</ul>";
-
-          userListDiv.innerHTML = userListHTML;
-        });
+      }
     </script>
   </body>
 </html>

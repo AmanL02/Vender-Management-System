@@ -107,7 +107,7 @@ app.post("/submit_application", async (req, res) => {
     });
 
     console.log("Data saved to MongoDB:", result.insertedId);
-    res.status(200).send("data saved succussfully");
+    res.redirect("/applicationSelected");
   } catch (error) {
     console.error("Error saving data to MongoDB:", error);
     res.status(500).send("Error saving data to MongoDB.");
@@ -137,20 +137,24 @@ app.get("/applicationSelected", (req, res) => {
   res.render("ApplicantsSelected.html");
 });
 
-app.get("/getUsers", (req, res) => {
-  const selectedLocation = req.query.location;
+app.get("/getUsers", async (req, res) => {
+  try {
+    const selectedLocation = req.query.location;
 
-  // Use the selectedLocation as the collection name
-  const selectedCollection = db.collection(selectedLocation);
+    // Access the database and the specified collection
+    const database = client.db("User"); // Replace with your actual database name
+    const selectedCollection = database.collection(selectedLocation);
 
-  selectedCollection.find({}).toArray((err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send("Error fetching data");
-    } else {
-      res.json(data); // Send collection data as JSON
-    }
-  });
+    // Fetch data from the selected collection
+    const users = await selectedCollection.find({}).toArray();
+    
+    
+    res.json(users); // Send collection data as JSON
+  } catch (err) {
+    console.error("Error:", err);
+    res.status(500).send("Error fetching data");
+  }
+
 });
 
 const port = 8000;
