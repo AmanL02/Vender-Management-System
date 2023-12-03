@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 app.use(express.json());
 const fs = require("fs");
+const multer = require("multer");
 
 var bodyParser = require("body-parser");
 const { response } = require("express");
@@ -15,6 +16,42 @@ app.engine("html", require("ejs").renderFile);
 
 app.use("/static", express.static("static"));
 app.use(express.urlencoded());
+
+// Set storage engine for Multer
+const storage = multer.diskStorage({
+  destination: "./docs/",
+  filename: function (req, file, cb) {
+    cb(
+      null,
+      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
+    );
+  },
+});
+
+// Initialize Multer upload
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 }, // File size limit: 10MB
+  fileFilter: function (req, file, cb) {
+    checkFileType(file, cb);
+  },
+}).single("documents");
+
+// Check file type function
+function checkFileType(file, cb) {
+  // Allowed file extensions
+  const filetypes = /pdf|doc|docx/;
+  // Check the file extension
+  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+  // Check the MIME type
+  const mimetype = filetypes.test(file.mimetype);
+
+  if (mimetype && extname) {
+    return cb(null, true);
+  } else {
+    cb("Error: Only PDF, DOC, and DOCX files are allowed!");
+  }
+}
 
 app.get("/", (req, res) => {
   const params = {};
@@ -70,51 +107,71 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/submit_application", async (req, res) => {
-  const {
-    location,
-    selectedDate,
-    amount,
-    name,
-    age,
-    aadhar_number,
-    contact_number,
-    goods_category,
-    specific_products,
-    hotspot,
-    comments,
-    agree_to_terms,
-  } = req.body;
+// Route handler for form submission with file upload
+app.post("/submit_application", (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      console.error("Error uploading file:", err);
+      res.status(500).send("Error uploading file.");
+    } else {
+      const {
+        location,
+        selectedDate,
+        selectedTime,
+        amount,
+        name,
+        age,
+        aadhar_number,
+        contact_number,
+        goods_category,
+        specific_products,
+        hotspot,
+        comments,
+        agree_to_terms,
+      } = req.body;
 
-  try {
-    await client.connect();
-    const database = client.db("User");
-    const collection = database.collection(location);
+      try {
+        await client.connect();
+        const database = client.db("User");
+        const collection = database.collection(location);
 
-    // Insert the form data into the collection
-    const result = await collection.insertOne({
-      selectedDate,
-      amount,
-      name,
-      age,
-      aadhar_number,
-      contact_number,
-      goods_category,
-      specific_products,
-      hotspot,
-      comments,
-      agree_to_terms,
-    });
+        // File path in Multer's 'req.file' object
+        const filePath = req.file ? req.file.path : "";
+        console.log("filepath", filePath)
 
-    console.log("Data saved to MongoDB:", result.insertedId);
-    res.redirect("/applicationSelected");
-  } catch (error) {
-    console.error("Error saving data to MongoDB:", error);
-    res.status(500).send("Error saving data to MongoDB.");
-  } finally {
-    // Close the MongoDB connection when you're done
-    await client.close();
-  }
+        if(!filePath)
+        {
+          return;
+        }
+
+        // Insert the form data including selectedDate, selectedTime, and file path into the collection
+        const result = await collection.insertOne({
+          selectedDate,
+          selectedTime,
+          amount,
+          name,
+          age,
+          aadhar_number,
+          contact_number,
+          goods_category,
+          specific_products,
+          hotspot,
+          comments,
+          agree_to_terms,
+          filePath: filePath, // Save file path in MongoDB
+        });
+
+        console.log("Data saved to MongoDB:", result.insertedId);
+        res.redirect("/applicationSelected");
+      } catch (error) {
+        console.error("Error saving data to MongoDB:", error);
+        res.status(500).send("Error saving data to MongoDB.");
+      } finally {
+        // Close the MongoDB connection when you're done
+        await client.close();
+      }
+    }
+  });
 });
 
 app.get("/hotspotSel", (req, res) => {
@@ -147,14 +204,12 @@ app.get("/getUsers", async (req, res) => {
 
     // Fetch data from the selected collection
     const users = await selectedCollection.find({}).toArray();
-    
-    
+
     res.json(users); // Send collection data as JSON
   } catch (err) {
     console.error("Error:", err);
     res.status(500).send("Error fetching data");
   }
-
 });
 
 const port = 8000;

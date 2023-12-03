@@ -6,8 +6,8 @@
 
   <body>
     <h1>Apply for License</h1>
-    <form action="/submit_application" method="post">
-      <input
+    <form action="/submit_application" method="post" enctype="multipart/form-data">
+      <input 
         type="hidden"
         id="location"
         name="location"
@@ -15,6 +15,23 @@
       />
       <label for="selectedDate">Select Date (4 or 5 Days Ahead):</label>
       <input type="date" id="selectedDate" name="selectedDate" />
+
+      <!-- Dropdown for selecting timings -->
+      <label for="selectedTime">Select Time:</label>
+      <select id="selectedTime" name="selectedTime">
+        <option value="">Select Time</option>
+        <!-- Adding time slots from 9 AM to 5 PM with one-hour intervals -->
+        <option value="09:00">9:00 AM</option>
+        <option value="10:00">10:00 AM</option>
+        <option value="11:00">11:00 AM</option>
+        <option value="12:00">12:00 PM</option>
+        <option value="13:00">1:00 PM</option>
+        <option value="14:00">2:00 PM</option>
+        <option value="15:00">3:00 PM</option>
+        <option value="16:00">4:00 PM</option>
+        <option value="17:00">5:00 PM</option>
+      </select>
+
       <label for="amount">Bid Amount:</label>
       <input
         type="number"
@@ -126,22 +143,19 @@
     </form>
 
     <script>
-      function getFourAndFiveDaysAhead() {
+      function getFourDaysAhead() {
         const today = new Date();
         today.setDate(today.getDate() + 4); // Adding 4 days
         const fourDaysAhead = today.toISOString().split("T")[0];
-
-        today.setDate(today.getDate() + 1); // Adding 1 more day to make it 5 days ahead
-        const fiveDaysAhead = today.toISOString().split("T")[0];
-
-        return [fourDaysAhead, fiveDaysAhead];
+        return fourDaysAhead;
       }
 
       const selectedDateInput = document.getElementById("selectedDate");
+      selectedDateInput.min = getFourDaysAhead();
 
-      const [fourDaysAhead, fiveDaysAhead] = getFourAndFiveDaysAhead();
-      selectedDateInput.min = fourDaysAhead;
-      selectedDateInput.max = fiveDaysAhead;
+      // Set default selected time to 9:00 AM
+      const selectedTimeDropdown = document.getElementById("selectedTime");
+      selectedTimeDropdown.value = "09:00";
     </script>
   </body>
 </html>
