@@ -22,14 +22,27 @@
       <option value="">Select Hotspot...</option>
     </select>
 
-    <label for="selectedDate">Select Date :</label>
-    <input type="date" id="selectedDate" />
+    <label for="selectedDate">Select Date:</label>
+    <input type="date" id="selectedDate" min="" max="" />
 
-    <!-- Display area for users who got the selected hotspot -->
-    <div id="userList"></div>
+    <label for="selectedTime">Select Time:</label>
+    <select id="selectedTime">
+      <option value="09:00">9:00 AM</option>
+      <option value="10:00">10:00 AM</option>
+      <option value="11:00">11:00 AM</option>
+      <option value="12:00">12:00 PM</option>
+      <option value="13:00">1:00 PM</option>
+      <option value="14:00">2:00 PM</option>
+      <option value="15:00">3:00 PM</option>
+      <option value="16:00">4:00 PM</option>
+      <option value="17:00">5:00 PM</option>
+    </select>
 
     <!-- Submit button to fetch data -->
     <button onclick="fetchUserData()">Fetch Data</button>
+
+    <!-- Display area for users who got the selected hotspot -->
+    <div id="userList"></div>
 
     <script>
       // Hotspot data based on locations
@@ -62,6 +75,8 @@
       }
 
       var selectedHotspot;
+      var selectedDateTime;
+
       document
         .getElementById("hotspots")
         .addEventListener("change", function () {
@@ -73,42 +88,45 @@
         const selectedLocation = document.getElementById("locations").value;
         const userListDiv = document.getElementById("userList");
 
-        const date = document.getElementById("selectedDate").value;
+        const selectedDate = document.getElementById("selectedDate").value;
+        const selectedTime = document.getElementById("selectedTime").value;
 
         // Fetch users based on selected location
         fetch(`/getUsers?location=${selectedLocation}`)
           .then((response) => response.json())
           .then((users) => {
-
-            console.log("users",users);
-            // Filter users based on selected hotspot
-
-            const filteredUsers = users.filter(
+            console.log("users", users);
+            // Filter users based on selected hotspot and selected time
+            let filteredUsers = users.filter(
               (user) =>
-                user.hotspot === selectedHotspot &&
-                user.selectedDate === date
+                user.selectedDate === selectedDate &&
+                user.selectedTime === selectedTime
             );
 
-            // Find the user with the highest bidding among the filtered users
-            let highestBidUser = { amount: 0 }; // Initial user with 0 bidding amount
+            // Find the user with the highest bidding amount among the filtered users
+            let highestBidUser = null;
+            let highestBidAmount = 0;
+
             filteredUsers.forEach((user) => {
               const bidAmount = parseFloat(user.amount);
-              if (bidAmount > highestBidUser.amount) {
+              if (bidAmount > highestBidAmount) {
+                highestBidAmount = bidAmount;
                 highestBidUser = user;
               }
             });
 
-            // Display details of the user with the highest bidding for the selected hotspot
-            let userDetailsHTML = `<h3>Highest Bidder at ${selectedHotspot}:</h3>`;
-            if (highestBidUser._id) {
+            // Display details of the users for the selected hotspot and time
+            let userDetailsHTML = `<h3>Users at ${selectedHotspot} for ${selectedDate} and ${selectedTime}:</h3>`;
+            if (highestBidUser) {
               userDetailsHTML += `
-              <p>Name: ${highestBidUser.name}</p>
-              <p>Age: ${highestBidUser.age}</p>
-              <p>Contact Number: ${highestBidUser.contact_number}</p>
-              <!-- Display other details as needed -->
-            `;
+                <p>Name: ${highestBidUser.name}</p>
+                <p>Age: ${highestBidUser.age}</p>
+                <p>Contact Number: ${highestBidUser.contact_number}</p>
+                <p>Amount: ${highestBidUser.amount}</p>
+                <!-- Display other details as needed -->
+        `;
             } else {
-              userDetailsHTML += `<p>No highest bidder found for ${selectedHotspot}</p>`;
+              userDetailsHTML += `<p>No users found for ${selectedHotspot} at ${selectedDate} and ${selectedTime}</p>`;
             }
 
             // Display the user details in userDetailsDiv
@@ -118,6 +136,15 @@
             console.error("Error fetching users:", error);
           });
       }
+
+      // Set minimum and maximum dates for date input (today, tomorrow, and day after tomorrow)
+      const today = new Date().toISOString().split("T")[0];
+      const threeDaysAhead = new Date();
+      threeDaysAhead.setDate(threeDaysAhead.getDate() + 3);
+      const maxDate = threeDaysAhead.toISOString().split("T")[0];
+
+      document.getElementById("selectedDate").min = today;
+      document.getElementById("selectedDate").max = maxDate ;
     </script>
   </body>
 </html>

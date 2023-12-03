@@ -1,32 +1,49 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Select a Vending Location</title>
-</head>
+    <style>
+      .top-right-button {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
     <h1>Select a Vending Location</h1>
+
+    <button onclick="navigateToVendingApplication()" class="top-right-button">
+      See the results
+    </button>
+
     <form id="locationForm" action="/hotspotSel" method="get">
-        <select name="location" id="locationSelect" required>
-            <option value="">Select...</option>
-            <option value="premnagar_market">Premnagar Market</option>
-            <option value="ballupur_chowk">Ballupur Chowk</option>
-            <option value="ghanta_ghar_market">Ghanta Ghar Market</option>
-            <option value="rajpur_road">Rajpur Road</option>
-        </select>
-        <input type="submit" value="View Hotspots" onclick="setAction()">
+      <select name="location" id="locationSelect" required>
+        <option value="">Select...</option>
+        <option value="premnagar_market">Premnagar Market</option>
+        <option value="ballupur_chowk">Ballupur Chowk</option>
+        <option value="ghanta_ghar_market">Ghanta Ghar Market</option>
+        <option value="rajpur_road">Rajpur Road</option>
+      </select>
+      <input type="submit" value="View Hotspots" onclick="setAction()" />
     </form>
 
     <script>
-        function setAction() {
-            const selectedLocation = document.getElementById("locationSelect").value;
-            if (selectedLocation) {
-                const form = document.getElementById("locationForm");
-                form.action = `/hotspotSel?location=${selectedLocation}`;
-            } else {
-                alert("Please select a location.");
-            }
+      function setAction() {
+        const selectedLocation =
+          document.getElementById("locationSelect").value;
+        if (selectedLocation) {
+          const form = document.getElementById("locationForm");
+          form.action = `/hotspotSel?location=${selectedLocation}`;
+        } else {
+          alert("Please select a location.");
         }
+      }
+
+      function navigateToVendingApplication() {
+        window.location.href = "/applicationSelected";
+      }
     </script>
-</body>
+  </body>
 </html>
