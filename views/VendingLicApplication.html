@@ -2,12 +2,83 @@
 <html>
   <head>
     <title>Vendor Slot Application</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: linear-gradient(to right, #a18cd1, #fbc2eb);
+      }
+
+      h1 {
+        text-align: center;
+      }
+
+      form {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+      }
+
+      input[type="date"],
+      input[type="number"],
+      input[type="text"],
+      input[type="file"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+      }
+
+      input[type="submit"] {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      input[type="submit"]:hover {
+        background-color: #45a049;
+      }
+
+      .form-element {
+        margin-bottom: 15px;
+      }
+
+      /* Styles for checkbox */
+      input[type="checkbox"] {
+        margin-right: 5px;
+        vertical-align: middle;
+      }
+    </style>
   </head>
 
   <body>
     <h1>Apply for License</h1>
-    <form action="/submit_application" method="post" enctype="multipart/form-data">
-      <input 
+    <form
+      action="/submit_application"
+      method="post"
+      enctype="multipart/form-data"
+    >
+      <input
         type="hidden"
         id="location"
         name="location"

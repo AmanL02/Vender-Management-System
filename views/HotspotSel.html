@@ -2,28 +2,44 @@
 <html>
   <head>
     <title>View Hotspots</title>
-    <script src="https://maps.googleapis.com/maps/api/js?key="></script>
-    <!-- Replace YOUR_API_KEY with your actual API key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCidLtoaQskmy6xwN9jNksyGmSl_10YP2o"></script>
+
     <style>
       body {
         font-family: Arial, Helvetica, sans-serif;
-        background-color: #f2f2f2;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(to bottom, #add8e6, #ffffff);
       }
+
       .container {
         width: 80%;
-        margin: 0 auto;
+        height: 100vh;
+        margin: 20px auto;
         padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
       #map {
-        height: 400px;
+        height: 600px;
         width: 100%;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
       }
     </style>
     <script>
       function initMap() {
         var map = new google.maps.Map(document.getElementById("map"), {
-          zoom: 15, // Adjust the zoom level as needed
-          center: { lat: 30.3360941, lng: 77.9621531 }, // Default coordinates for Dehradun
+          zoom: 15,
+          center: { lat: 30.3360941, lng: 77.9621531 },
         });
 
         // Define hotspots for each location
