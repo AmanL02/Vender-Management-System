@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Display Users with Hotspot</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        background: linear-gradient(to bottom, #90ee90, #ffffff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      .container {
+        width: 50%;
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 5px;
+        color: #333;
+      }
+
+      select,
+      input[type="date"],
+      input[type="button"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+        background-color: #fff;
+        color: #333;
+      }
+
+      #userList {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        background-color: #fff;
+        color: #333;
+      }
+
+      button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: #fff;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Display Users with Hotspot</h1>
+
+      <!-- Dropdown to select location -->
+      <label for="locations">Select Location:</label>
+      <select id="locations" onchange="updateHotspots()">
+        <option value="">Select Location...</option>
+        <option value="premnagar_market">Premnagar</option>
+        <option value="ballupur_chowk">Ballupur</option>
+        <option value="ghanta_ghar_market">Ghanta Ghar</option>
+        <option value="rajpur_road">Rajpur Road</option>
+      </select>
+
+      <!-- Dropdown to select hotspot based on location selection -->
+      <label for="hotspots">Select Hotspot:</label>
+      <select id="hotspots">
+        <option value="">Select Hotspot...</option>
+      </select>
+
+      <label for="selectedDate">Select Date:</label>
+      <input type="date" id="selectedDate" min="" max="" />
+
+      <label for="selectedTime">Select Time:</label>
+      <select id="selectedTime">
+        <option value="09:00">9:00 AM</option>
+        <option value="10:00">10:00 AM</option>
+        <option value="11:00">11:00 AM</option>
+        <option value="12:00">12:00 PM</option>
+        <option value="13:00">1:00 PM</option>
+        <option value="14:00">2:00 PM</option>
+        <option value="15:00">3:00 PM</option>
+        <option value="16:00">4:00 PM</option>
+        <option value="17:00">5:00 PM</option>
+      </select>
+
+      <!-- Submit button to fetch data -->
+      <button onclick="fetchUserData()">Fetch Data</button>
+
+      <!-- Display area for users who got the selected hotspot -->
+      <div id="userList"></div>
+
+      <script>
+        // Hotspot data based on locations
+        const hotspotsData = {
+          premnagar_market: ["hotspot1", "hotspot2", "hotspot3"],
+          ballupur_chowk: ["hotspot1", "hotspot2", "hotspot3"],
+          ghanta_ghar_market: ["Hotspot X", "Hotspot Y", "Hotspot Z"],
+          rajpur_road: ["Hotspot i", "Hotspot ii", "Hotspot iii"],
+        };
+
+        // Function to update hotspots dropdown based on selected location
+        function updateHotspots() {
+          const locationsDropdown = document.getElementById("locations");
+          const hotspotsDropdown = document.getElementById("hotspots");
+          const selectedLocation = locationsDropdown.value;
+
+          // Clear previous options
+          hotspotsDropdown.innerHTML =
+            '<option value="">Select Hotspot...</option>';
+
+          if (selectedLocation && hotspotsData[selectedLocation]) {
+            const hotspots = hotspotsData[selectedLocation];
+            hotspots.forEach((hotspot) => {
+              const option = document.createElement("option");
+              option.value = hotspot;
+              option.text = hotspot;
+              hotspotsDropdown.appendChild(option);
+            });
+          }
+        }
+
+        var selectedHotspot;
+        var selectedDateTime;
+
+        document
+          .getElementById("hotspots")
+          .addEventListener("change", function () {
+            selectedHotspot = this.value;
+          });
+
+        // Function to fetch user data when submit button is clicked
+        function fetchUserData() {
+          const selectedLocation = document.getElementById("locations").value;
+          const userListDiv = document.getElementById("userList");
+
+          const selectedDate = document.getElementById("selectedDate").value;
+          const selectedTime = document.getElementById("selectedTime").value;
+
+          // Fetch users based on selected location
+          fetch(`/getUsers?location=${selectedLocation}`)
+            .then((response) => response.json())
+            .then((users) => {
+              console.log("users", users);
+              // Filter users based on selected hotspot and selected time
+              let filteredUsers = users.filter(
+                (user) =>
+                  user.selectedDate === selectedDate &&
+                  user.selectedTime === selectedTime
+              );
+
+              // Find the user with the highest bidding amount among the filtered users
+              let highestBidUser = null;
+              let highestBidAmount = 0;
+
+              filteredUsers.forEach((user) => {
+                const bidAmount = parseFloat(user.amount);
+                if (bidAmount > highestBidAmount) {
+                  highestBidAmount = bidAmount;
+                  highestBidUser = user;
+                }
+              });
+
+              // Display details of the users for the selected hotspot and time
+              let userDetailsHTML = `<h3>Users at ${selectedHotspot} for ${selectedDate} and ${selectedTime}:</h3>`;
+              if (highestBidUser) {
+                userDetailsHTML += `
+                  <p>Name: ${highestBidUser.name}</p>
+                  <p>Age: ${highestBidUser.age}</p>
+                  <p>Contact Number: ${highestBidUser.contact_number}</p>
+                  <p>Amount: ${highestBidUser.amount}</p>
+                  <!-- Display other details as needed -->
+          `;
+              } else {
+                userDetailsHTML += `<p>No users found for ${selectedHotspot} at ${selectedDate} and ${selectedTime}</p>`;
+              }
+
+              // Display the user details in userDetailsDiv
+              userListDiv.innerHTML = userDetailsHTML;
+            })
+            .catch((error) => {
+              console.error("Error fetching users:", error);
+            });
+        }
+
+        // Set minimum and maximum dates for date input (today, tomorrow, and day after tomorrow)
+        const today = new Date().toISOString().split("T")[0];
+        const threeDaysAhead = new Date();
+        threeDaysAhead.setDate(threeDaysAhead.getDate() + 3);
+        const maxDate = threeDaysAhead.toISOString().split("T")[0];
+
+        document.getElementById("selectedDate").min = today;
+        document.getElementById("selectedDate").max = maxDate;
+      </script>
+    </div>
+  </body>
+</html>
